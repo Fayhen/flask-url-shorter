@@ -20,10 +20,11 @@ def create_app(test_config=None):
     else:
         app.config.from_mapping(test_config)
 
-    from api.database import db, setup_database, destroy_database
+    from api.database import db, setup_database, destroy_database, populate
     db.init_app(app)
     app.cli.add_command(setup_database)
     app.cli.add_command(destroy_database)
+    app.cli.add_command(populate)
 
     # Ensure instance folder
     try:
