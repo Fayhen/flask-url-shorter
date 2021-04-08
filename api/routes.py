@@ -1,4 +1,7 @@
+import json
 from flask import Blueprint, request
+from api.database import db_session
+from api.models import Url
 from api.methods import hash_url
 
 
@@ -25,3 +28,24 @@ def short_url():
 def redirect_url():
     print(request)
     return 'redirect url'
+
+
+@api.route('get-db', methods=['GET'])
+def get_db():
+    urls = Url.query.all()
+    print(urls)
+    return json.dumps(Url.serialize_list(urls))
+
+
+@api.route('post-db', methods=['POST'])
+def post_db():
+    data = request.json
+    long_url = data.get('url', None)
+    if long_url is not None:
+        new_url = Url(long_url=long_url, short_url='shortio')
+        db_session.add(new_url)
+        db_session.commit()
+
+        return json.dumps(new_url.short_url)
+
+    return 'Error'
