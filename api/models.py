@@ -7,10 +7,10 @@ class Url(Base, BaseSerializer):
     __tablename__ = 'urls'
     id = Column(Integer, primary_key=True)
     clicks = Column(Integer, nullable=False, default=0)
-    short_url = Column(String, unique=True, nullable=False)
     long_url = Column(String, nullable=False)
+    hash = Column(String, unique=True)
 
     def serialize(self):
         data = BaseSerializer.serialize(self)
-        del data['id']
+        # del data['id']
         return data
