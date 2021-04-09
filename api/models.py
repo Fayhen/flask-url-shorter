@@ -14,3 +14,5 @@ class Url(Base, BaseSerializer):
         data = BaseSerializer.serialize(self)
         # del data['id']
         return data
+
+    # def get_short_url(self):

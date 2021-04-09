@@ -25,6 +25,7 @@ def generate_hash():
 
     return new_hash
 
+
 def generate_hash_with_id(id):
     """
     Generates a new short hash using an URL's ID, making it unique.
@@ -32,3 +33,15 @@ def generate_hash_with_id(id):
     new_hash = hashmaker.encode(id)
 
     return new_hash
+
+
+def get_full_url(hashed_id):
+    """
+    Returns the full URL corresponding to the hash passed as argument.
+    """
+    url_instance = Url.query.filter_by(hash=hashed_id).first()
+
+    if url_instance:
+        return url_instance.long_url
+
+    return None
