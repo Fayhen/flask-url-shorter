@@ -15,28 +15,28 @@ Base.query = db_session.query_property()
 
 
 @click.command('setup-db')
-def setup_db():
+def setup_db(engine_env=engine):
     """
     Setups database from scratch. Models must be imported to
     create their corresponding tables.
     """
     import api.models
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine_env)
     click.echo('Database created.')
 
 
 @click.command('destroy-db')
-def destroy_db():
+def destroy_db(engine_env=engine):
     """
     Erases the database. All data and tables are removed. This
     operation is irreversible.
     """
-    Base.metadata.drop_all(bind=engine)
+    Base.metadata.drop_all(bind=engine_env)
     click.echo('Database destroyed.')
 
 
 @click.command('populate-db')
-def populate_db():
+def populate_db(session=db_session):
     """
     Populate database with data from a CSV file.
     """
@@ -48,13 +48,13 @@ def populate_db():
         for row in reader:
             # Create and save new URL instance to generate its ID
             new_url = Url(long_url=row[0])
-            db_session.add(new_url)
-            db_session.commit()
+            session.add(new_url)
+            session.commit()
 
             # Generate and save a short URL hash using the ID
             new_hash = generate_hash(new_url.id)
             new_url.hash = new_hash
-            db_session.add(new_url)
-            db_session.commit()
+            session.add(new_url)
+            session.commit()
 
     click.echo('Data added.')
