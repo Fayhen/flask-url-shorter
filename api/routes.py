@@ -23,17 +23,15 @@ def add_url():
         )
         db_session.add(new_url)
         db_session.commit()
-        print(new_url.serialize())
 
         # Create new hash using new URL's id and update instance
         new_hash = generate_hash(new_url.id)
         new_url.hash = new_hash
-        print(new_url.serialize())
         db_session.add(new_url)
         db_session.commit()
 
         data = {
-            'short_url': f'{request.url_root}/lil/{new_url.hash}'
+            'short_url': f'{request.url_root}lil/{new_url.hash}'
         }
 
         return make_response(data, 201)
@@ -45,20 +43,29 @@ def add_url():
     return make_response({'error': error_msg}, 400)
 
 
-@api.route('/<string:hashed_id>', methods=['GET'])
+@api.route('/<string:hashed_id>', methods=['GET', 'DELETE'])
 def redirect_url(hashed_id):
     """
-    Redirection route. Redirects request to a short URL to the
-    full URL.
+    Short URL handler. Redirects short URLs to their full address counterpart on
+    GET requests. Deletes short URLs on DELETE requests.
     """
     url = get_url_by_hash(hashed_id)
-    if url:
+
+    # GET requests handler
+    if url and request.method == 'GET':
         # Increment URL access counter before redirecting
         url.clicks = url.clicks + 1
         db_session.add(url)
         db_session.commit()
 
         return redirect(url.long_url)
+
+    # DELETE requests handler
+    if url and request.method == 'DELETE':
+        db_session.delete(url)
+        db_session.commit()
+
+        return make_response({'msg': 'URL deleted.'}, 200)
 
     error_msg = 'Sorry, the requested short URL was not found.'
     return make_response({'error': error_msg}, 404)
