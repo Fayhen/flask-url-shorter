@@ -9,7 +9,7 @@ from api.validators import validate_url
 api = Blueprint('api', __name__, url_prefix='/lil')
 
 
-@api.route('/short-url', methods=['POST'])
+@api.route('/shorten-url', methods=['POST'])
 def add_url():
     print(request.url_root)
     data = request.json

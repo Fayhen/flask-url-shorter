@@ -22,10 +22,10 @@ def create_app(test_config=None):
         print('Error: Unable to create app instance directory.')
 
     # Database
-    from api.database import db_session, setup_db, destroy_db, populate
+    from api.database import db_session, setup_db, destroy_db, populate_db
     app.cli.add_command(setup_db)
     app.cli.add_command(destroy_db)
-    app.cli.add_command(populate)
+    app.cli.add_command(populate_db)
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
