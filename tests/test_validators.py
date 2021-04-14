@@ -1,4 +1,3 @@
-import pytest
 from api.validators import validate_url
 
 

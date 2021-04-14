@@ -11,10 +11,14 @@ api = Blueprint('api', __name__, url_prefix='/lil')
 
 @api.route('/shorten-url', methods=['POST'])
 def add_url():
-    print(request.url_root)
+    print('hue')
     data = request.json
-    long_url = data.get('url', None)
+    print(type(data))
+    print(data)
+    long_url = data.get('url', None) if data else None
+    print(long_url)
     valid = validate_url(str(long_url))
+    print(valid)
 
     if long_url and valid:
         # Crate new URL instance and add to db

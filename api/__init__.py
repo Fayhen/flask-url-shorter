@@ -3,6 +3,7 @@ import config
 from flask import Flask
 
 
+# Refactor to include al database connections in the configuration being passed to the app factory
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
