@@ -38,10 +38,10 @@ def test_add_url_wrong_http_methods(client):
     patch_response = client.patch('/lil/shorten-url')
     delete_response = client.delete('/lil/shorten-url')
 
-    assert get_response.status_code == 405
+    assert get_response.status_code == 404
     assert put_response.status_code == 405
     assert patch_response.status_code == 405
-    assert delete_response.status_code == 405
+    assert delete_response.status_code == 404
 
 
 def test_redirect(client):

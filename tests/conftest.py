@@ -1,6 +1,5 @@
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
+from flask_sqlalchemy import SQLAlchemy
 
 import config
 from api import create_app
@@ -25,6 +24,20 @@ def app():
     #     populate_db(session=test_session)
 
     yield app
+
+
+@pytest.fixture
+def db(app):
+    runner = app.test_cli_runner()
+    runner.invoke(args=['setup-db'])
+
+    with app.app_context():
+        db = SQLAlchemy()
+        db.init_app(app)
+
+        yield db
+
+    runner.invoke(args=['destroy-db'])
 
 
 @pytest.fixture
