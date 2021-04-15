@@ -55,14 +55,14 @@ def test_redirect(client):
     assert request_short_url_response.status_code == 302
 
 
-def test_redirect2(client, db):
-    new_url = Url(long_url='https://github.com')
-    db.session.add(new_url)
-    db.session.commit()
-
-    new_url.hash = generate_hash(new_url.id)
-    db.session.add(new_url)
-    db.session.commit()
-
-    request_short_url_response = client.get(f'/lil/{new_url.hash}')
-    assert request_short_url_response.status_code == 302
+# def test_redirect2(client, db):
+#     new_url = Url(long_url='https://github.com')
+#     db.session.add(new_url)
+#     db.session.commit()
+#
+#     new_url.hash = generate_hash(new_url.id)
+#     db.session.add(new_url)
+#     db.session.commit()
+#
+#     request_short_url_response = client.get(f'/lil/{new_url.hash}')
+#     assert request_short_url_response.status_code == 302

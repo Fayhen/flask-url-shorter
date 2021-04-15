@@ -1,6 +1,7 @@
 import json
-from flask import Blueprint, request, redirect, make_response
-from api.database import db_session
+from flask import Blueprint, request, redirect, make_response, g, current_app
+# from api.database import db_session
+from api import db
 from api.models import Url
 from api.methods import generate_hash, get_url_by_hash
 from api.validators import validate_url
@@ -11,28 +12,23 @@ api = Blueprint('api', __name__, url_prefix='/lil')
 
 @api.route('/shorten-url', methods=['POST'])
 def add_url():
-    print('hue')
     data = request.json
-    print(type(data))
-    print(data)
     long_url = data.get('url', None) if data else None
-    print(long_url)
     valid = validate_url(str(long_url))
-    print(valid)
 
     if long_url and valid:
         # Crate new URL instance and add to db
         new_url = Url(
             long_url=long_url
         )
-        db_session.add(new_url)
-        db_session.commit()
+        db.session.add(new_url)
+        db.session.commit()
 
         # Create new hash using new URL's id and update instance
         new_hash = generate_hash(new_url.id)
         new_url.hash = new_hash
-        db_session.add(new_url)
-        db_session.commit()
+        db.session.add(new_url)
+        db.session.commit()
 
         data = {
             'short_url': f'{request.url_root}lil/{new_url.hash}'
@@ -59,15 +55,15 @@ def redirect_url(hashed_id):
     if url and request.method == 'GET':
         # Increment URL access counter before redirecting
         url.clicks = url.clicks + 1
-        db_session.add(url)
-        db_session.commit()
+        db.session.add(url)
+        db.session.commit()
 
         return redirect(url.long_url)
 
     # DELETE requests handler
     if url and request.method == 'DELETE':
-        db_session.delete(url)
-        db_session.commit()
+        db.session.delete(url)
+        db.session.commit()
 
         return make_response({'msg': 'URL deleted.'}, 200)
 

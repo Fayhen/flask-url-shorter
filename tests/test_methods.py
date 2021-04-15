@@ -1,5 +1,5 @@
 from api.models import Url
-from api.methods import generate_hash, get_url_by_hash
+from api.methods import generate_hash
 
 
 def test_generate_hash():
@@ -18,8 +18,10 @@ def test_hash_uniqueness():
     assert len(hash_set) == len(hash_list)
 
 
-def test_get_url_by_hash(db):
-    new_url = Url(long_url="https://github.com")
-    db.session.add(new_url)
-    db.session.commit()
-    assert True
+# def test_get_url_by_hash(client):
+#     new_url = Url(long_url="https://github.com")
+#     new_url.save()
+#
+#     print(new_url.__dict__)
+#
+#     assert True == False
