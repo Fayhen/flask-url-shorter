@@ -3,6 +3,8 @@ This is a URL shortener API made with [Flask](https://flask.palletsprojects.com/
 
 It creates short links by generating unique hashes and associating them to long URL addresses. It also redirects short URLs requests to their full address counterparts. URL data is locally stored on a SQLite database, through [SQLAlchemy](https://www.sqlalchemy.org/).
 
+---
+
 ### Application setup
 
 Generate virtual environment:
@@ -34,7 +36,7 @@ flask run
 
 You're all set.
 
-You also have the option to erase the database and populate it with a few URLs from a static CSV file in the assets directory, with the commands below. Note that erasing the database is irreversible.
+You also have the option to erase the database or populate it with a few URLs from a static CSV file in the assets directory, with the commands below. Note that erasing the database is irreversible.
 
 ```
 flask destroy-db
@@ -42,7 +44,15 @@ flask destroy-db
 flask populate-db
 ```
 
+---
+
 ### Usage
+
+#### Tests
+
+Tests were written using the [pytest](https://docs.pytest.org/) framework. To run, simply execute `pytest` on the command line with your virtual environment activated:
+
+#### Making requests
 
 This API listens to the following routes:
 
@@ -50,7 +60,7 @@ This API listens to the following routes:
 
    Methods: `POST`
 
-   This is the URL shortening endpoint. It expects a JSON request body containing a single key-value pair with the URL to be shortened, and responds with a similar object containing the short URL:
+   This is the URL shortening endpoint. A JSON request body is expected, containing a single key-value pair with the URL to be shortened. Successful requests will receive a response containing the short URL. Examples of valid request and response bodies can be seen below:
 
    ```
    // Expected request body:
@@ -64,13 +74,13 @@ This API listens to the following routes:
    }
    ```
 
-   A URL validation process takes place, requiring the passed URL to match a regex that ensures its default format. It also requires the URL to begin with either `"https://"` or `"http://"`. Missing or invalid data will cause this endpoint to respond with status code `400` and an error message.
+   The long URL address is submitted to a validation process, which involves a regex that ensures a valid URL format. Either `"https://"` or `"http://"` at the beginning of the URL is also required. Invalid or missing data is met with a `400` response accompanied by an error message.
 
 - `/lil/<hash>`
 
    Methods: `GET`, `DELETE`
 
-   This is short URL handling endpoint. It redirects GET requests to their corresponding long address counterpart, and deletes matching URL entries in DELETE requests. Should a requested short URL not be found, it returns a `404` response. Short URLs also have a clicks counter that is incremented with each request.
+   This is the short URL handler endpoint. GET requests are redirected to their corresponding long address counterpart, while DELETE requests removes URLs from the database. `404` responses are returned for not found URLs.  Successful GET requests will also increment a click counter that keeps track of short URL usage.
 
 - `/lil/<hash>/clicks`
 
@@ -82,4 +92,19 @@ This API listens to the following routes:
 
    Methods: `GET`
 
-   This endpoint returns all data from the database. It is intended as a development endpoint.
+   This endpoint returns all data from the database. It is intended as a development endpoint. Responses consist of an array of objects. For example:
+
+   ```
+   [
+     {
+       "clicks": 3,
+       "long_url": "https://www.example-1.com",
+       "hash": "Pmg0"
+     },
+     {
+       "clicks": 5,
+       "long_url": "https://www.example-2.com",
+       "hash": "Ppe9"
+     }
+   ]
+   ```

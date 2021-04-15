@@ -81,7 +81,7 @@ def get_clicks(hashed_id):
     if url:
         data = {
             'clicks': url.clicks,
-            'message': f'This short URL has been accessed {url.clicks} times.'
+            'msg': f'This short URL has been accessed {url.clicks} times.'
         }
 
         return make_response(data, 200)
@@ -90,11 +90,15 @@ def get_clicks(hashed_id):
     return make_response({'error': error_msg}, 404)
 
 
-@api.route('get-all', methods=['GET'])
+@api.route('/get-all', methods=['GET'])
 def get_all():
     """
     Dev route. Returns all URLs in database.
     """
     urls = Url.query.all()
+    serialized_urls = Url.serialize_list(urls)
 
-    return json.dumps(Url.serialize_list(urls))
+    response = make_response(json.dumps(serialized_urls), 200)
+    response.headers['Content-Type'] = 'application/json'
+
+    return response
