@@ -3,7 +3,7 @@ from flask import Blueprint, request, redirect, make_response, g, current_app
 # from api.database import db_session
 from api import db
 from api.models import Url
-from api.methods import generate_hash, get_url_by_hash
+# from api.methods import generate_hash, get_url_by_hash
 from api.validators import validate_url
 
 
@@ -17,18 +17,8 @@ def add_url():
     valid = validate_url(str(long_url))
 
     if long_url and valid:
-        # Crate new URL instance and add to db
-        new_url = Url(
-            long_url=long_url
-        )
-        db.session.add(new_url)
-        db.session.commit()
-
-        # Create new hash using new URL's id and update instance
-        new_hash = generate_hash(new_url.id)
-        new_url.hash = new_hash
-        db.session.add(new_url)
-        db.session.commit()
+        # Crate and retrieve new URL instance through static method
+        new_url = Url.create_new(long_url)
 
         data = {
             'short_url': f'{request.url_root}lil/{new_url.hash}'
@@ -43,13 +33,13 @@ def add_url():
     return make_response({'error': error_msg}, 400)
 
 
-@api.route('/<string:hashed_id>', methods=['GET', 'DELETE'])
-def redirect_url(hashed_id):
+@api.route('/<string:hashed_url>', methods=['GET', 'DELETE'])
+def redirect_url(hashed_url):
     """
     Short URL handler. Redirects short URLs to their full address counterpart on
     GET requests. Deletes short URLs on DELETE requests.
     """
-    url = get_url_by_hash(hashed_id)
+    url = Url.get_url_by_hash(hashed_url)
 
     # GET requests handler
     if url and request.method == 'GET':
@@ -71,13 +61,13 @@ def redirect_url(hashed_id):
     return make_response({'error': error_msg}, 404)
 
 
-@api.route('/<string:hashed_id>/clicks', methods=['GET'])
-def get_clicks(hashed_id):
+@api.route('/<string:hashed_url>/clicks', methods=['GET'])
+def get_clicks(hashed_url):
     """
     Click counting route. Returns how many times a short URL was
     visited.
     """
-    url = get_url_by_hash(hashed_id)
+    url = Url.get_url_by_hash(hashed_url)
     if url:
         data = {
             'clicks': url.clicks,

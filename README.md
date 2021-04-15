@@ -50,7 +50,7 @@ flask populate-db
 
 #### Tests
 
-Tests were written using the [pytest](https://docs.pytest.org/) framework. To run, simply execute `pytest` on the command line with your virtual environment activated:
+Tests were written using the [pytest](https://docs.pytest.org/) framework. To run, simply execute `pytest` on the command line with your virtual environment activated.
 
 #### Making requests
 
@@ -86,13 +86,20 @@ This API listens to the following routes:
 
    Methods: `GET`
 
-   This is the clicks counter endpoint. It simply returns a response object containing the counter for how many times the corresponding short URL has been accessed through API requests.
+   This is the clicks counter endpoint. It responds with an object containing a count of how many times the short URL has been accessed through API requests. Alternatively returns a `404` if a URL with the given hash is not found. Below follows an example of a successful response:
+
+   ```
+   {
+     "clicks": 17,
+     "msg": "This short URL has been accessed 17 times."
+   }
+   ```
   
 - `/get-all`
 
    Methods: `GET`
 
-   This endpoint returns all data from the database. It is intended as a development endpoint. Responses consist of an array of objects. For example:
+   This endpoint returns all data from the database as an array of objects. It is intended as a development endpoint. A response example follows:
 
    ```
    [
